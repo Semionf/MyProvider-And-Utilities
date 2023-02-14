@@ -1,11 +1,11 @@
 ﻿namespace Utilities
 {
-    public interface ILogger
+    public interface MyILogger
     {
         void Init();
-        void LogEvent(string msg);
-        void LogError(string msg);
-        void LogException(string msg, Exception exce);
+        void LogEvent(LogItem item);
+        void LogError(LogItem item);
+        void LogException(LogItem item);
         void LogCheckHouseKeeping();
     }
   

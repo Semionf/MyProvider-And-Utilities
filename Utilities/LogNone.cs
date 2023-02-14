@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class LogNone : ILogger
+    public class LogNone : MyILogger
     {
         public void Init()
         {
@@ -18,17 +18,17 @@ namespace Utilities
            
         }
 
-        public void LogError(string msg)
+        public void LogError(LogItem log)
         {
             
         }
 
-        public void LogEvent(string msg)
+        public void LogEvent(LogItem log)
         {
            
         }
 
-        public void LogException(string msg, Exception exce)
+        public void LogException(LogItem log)
         {
           
         }

@@ -7,59 +7,84 @@ using System.Data.SqlClient;
 
 namespace Utilities
 {
-    public class LogDB : ILogger
+    public class LogDB : MyILogger
     {
-        static string ConnectionString = "Integrated Security = SSPI; Persist Security Info = False; Initial Catalog = Northwind; Data Source = MSI\\\\SQLEXPRESS";
-        
-        public void InitDB()
+        static string? ConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
+        public void Init()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
 
-                string queryString = "if not exists (Select * From LogDB) begin CREATE TABLE LogDB (\r\n int id identity,\r\n    Message nvarchar(100) NOT NULL,\r\n Type nvarchar(40) NOT NULL, Date Date not null, Exception nvarchar(90) end\r\n)";
-
-                // Adapter
-                using (SqlCommand command = new SqlCommand(queryString, connection))
+                SqlCommand command;
+                Task.Run(() =>
                 {
-                    connection.Open();
-                    //Reader
-                    command.ExecuteNonQuery();
-                }
+                    while (true)
+                    {
+                        if (Logger.myQueue.Count > 0)
+                        {
+                            LogItem item = Logger.myQueue.Dequeue();
+                            if (item.Type == "Error")
+                            {
+                                LogError(item);
+                            }
+                            else if (item.Type == "Event")
+                            {
+                                LogEvent(item);
+                            }
+                            else if (item.Type == "Exception")
+                            {
+                                LogException(item);
+                            }
+                            System.Threading.Thread.Sleep(60000 * 10); // when queue is empty, waits 10 minutes
+                        }
+                    }
+                });
+
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        LogCheckHouseKeeping();
+                        System.Threading.Thread.Sleep(60000 * 10); // when queue is empty, waits 10 minutes
+                    }
+                });
+               
             }
         }
-        public void AddToDB(string Type, string message, Exception? exce)
+        public void AddToDB(LogItem item)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
-                DateTime DateTime = DateTime.Now;
+                item.DateTime = DateTime.Now;
                 string queryString;
-                if (exce != null)
+                if (item.exception != null)
                 {
-                     queryString = $"insert into LogDB (Message, Type, Exception, Date) values ('@message','@type', @'exception', GETDATE())";
+                     queryString = $"insert into Log (Stack_Trace, Message, Type, Date) values (@stackTrace,'@message','@type', @dateTime)";
                 }
                 else
                 {
-                     queryString = $"insert into LogDB (Message, Type, Date) values ('@message','@type', GETDATE())";
+                     queryString = $"insert into Log (Type ,Message, Type, Date) values ( '@type','@message',@dateTime)";
                 }
 
                 // Adapter
                 using (SqlCommand command = new SqlCommand(queryString, connection))
                 {
                     connection.Open();
-                    command.Parameters.AddWithValue("@type", Type);
-                    command.Parameters.AddWithValue("@message", message);
-                    if(exce != null)
+                    if(item.exception!= null)
                     {
-                        command.Parameters.AddWithValue("@exception", exce.Message);
+                        command.Parameters.AddWithValue("@message", item.exception.Message);
+                        command.Parameters.AddWithValue("@stackTrace", item.exception.StackTrace);
                     }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@message", item.Message);
+                    }
+                    command.Parameters.AddWithValue("@dateTime", item.DateTime);
+                    command.Parameters.AddWithValue("@type", item.Type);
                     //Reader
                     command.ExecuteNonQuery();
                 }
             }
-        }
-        public void Init()
-        {
-            InitDB();
         }
 
         public void LogCheckHouseKeeping()
@@ -67,7 +92,7 @@ namespace Utilities
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 
-                string queryString = "if exists (Select * from LogDB where Date < DATEADD(month,-3, GETDATE())) begin DELETE FROM LogDB WHERE Date < DATEADD(month, -3, GETDATE()) end";
+                string queryString = "Delete from log where Date < DATEADD(month, -3, GETDATE())";
 
                 // Adapter
                 using (SqlCommand command = new SqlCommand(queryString, connection))
@@ -79,19 +104,19 @@ namespace Utilities
             }
         }
 
-        public void LogError(string msg)
+        public void LogError(LogItem item)
         {
-            AddToDB("Error", msg, null);
+            AddToDB(item);
         }
 
-        public void LogEvent(string msg)
+        public void LogEvent(LogItem item)
         {
-            AddToDB("Event", msg, null);
+            AddToDB(item);
         }
 
-        public void LogException(string msg, Exception exce)
+        public void LogException(LogItem item)
         {
-            AddToDB("Exception", msg, exce);
+            AddToDB(item);
         }
     }
 }

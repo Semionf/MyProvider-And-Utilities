@@ -1,0 +1,11 @@
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\bin\Debug\TestUtility.exe.config
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\bin\Debug\TestUtility.exe
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\bin\Debug\TestUtility.pdb
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\bin\Debug\System.Data.SqlClient.dll
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\bin\Debug\System.Data.SqlClient.xml
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\obj\Debug\TestUtility.csproj.AssemblyReference.cache
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\obj\Debug\TestUtility.csproj.SuggestedBindingRedirects.cache
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\obj\Debug\TestUtility.csproj.CoreCompileInputs.cache
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\obj\Debug\TestUtility.csproj.CopyComplete
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\obj\Debug\TestUtility.exe
+C:\Users\sfurl\source\repos\MyProvider\TestUtility\obj\Debug\TestUtility.pdb

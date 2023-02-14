@@ -6,44 +6,91 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class LogFile:ILogger
+    public class LogFile : MyILogger
     {
-        
-        static int MAX_SIZE = 5000000;
-        static string FILE_NAME = "Log";
-        static string Original_File_Name = "Log";
-        static string Ending = ".txt";
-        static int counter = 0;
-      
+        private long File_Max_Size = Convert.ToInt64(Environment.GetEnvironmentVariable("File_Max_Size")); // 1 mega bytes
+        private string File_Name = Environment.GetEnvironmentVariable("File_Name");
+        private string Original_File_Name = Environment.GetEnvironmentVariable("File_Name");
+        private string Ending = ".txt";
+        private int fileNameCounter = 0;
+        private object obj = new object();
+
         public void Init()
         {
-            
-        }
-        public void AddToFile(string message, Exception? exce)
-        {
-            DateTime DateTime = DateTime.Now;
-            using (StreamWriter sw = new StreamWriter(FILE_NAME))
+            Task.Run(() =>
             {
-                if (exce == null)
+                while (true)
                 {
-                    sw.WriteLine($"{DateTime.Day}/{DateTime.Month}/{DateTime.Year} - {DateTime.Hour}:{DateTime.Minute} - {message}");
+                    if (Logger.myQueue.Count > 0)
+                    {
+                        LogItem item = Logger.myQueue.Dequeue();
+                        AddToFile(item);
+                        System.Threading.Thread.Sleep(1000); // writes to log each 1 sec
+                    }
                 }
-                else
+            });
+            Task.Run(() =>
+            {
+                while (true)
                 {
-                    sw.WriteLine($"{DateTime.Day}/{DateTime.Month}/{DateTime.Year} - {DateTime.Hour}:{DateTime.Minute} - {message} - Exception: {exce.Message}");
+                    LogCheckHouseKeeping();
+                    System.Threading.Thread.Sleep(60000 * 10); // checks if file is at max size each 10 minutes
                 }
-            }
+            });
+
+        }
+        public void AddToFile(LogItem item)
+        {
+            //string hour, minute, seconds;
+            //lock (obj)
+            //{
+            //    using (StreamWriter sw = new StreamWriter(File_Name, true))
+            //    {
+            //        if (item.DateTime.Hour < 10)
+            //        {
+            //            hour = "0" + item.DateTime.Hour;
+            //        }
+            //        else
+            //        {
+            //            hour = item.DateTime.Hour.ToString();
+            //        }
+            //        if (item.DateTime.Minute < 10)
+            //        {
+            //            minute = "0" + item.DateTime.Minute;
+            //        }
+            //        else
+            //        {
+            //            minute = item.DateTime.Minute.ToString();
+            //        }
+            //        if (item.DateTime.Second < 10)
+            //        {
+            //            seconds = "0" + item.DateTime.Second;
+            //        }
+            //        else
+            //        {
+            //            seconds = item.DateTime.Second.ToString();
+            //        }
+            //        if (item.exception == null)
+            //        {
+            //            sw.WriteLine($"{item.DateTime.Day}/{item.DateTime.Month}/{item.DateTime.Year} - {hour}:{minute}:{seconds} - {item.Message}");
+            //        }
+            //        else
+            //        {
+            //            sw.WriteLine($"{item.DateTime.Day} / {item.DateTime.Month} / {item.DateTime.Year}  -  {hour} : {minute}:{seconds}  -  {item.exception.Message} : {item.exception.StackTrace}");
+            //        }
+            //    }
+            //}
         }
         public void LogCheckHouseKeeping()
         {
-            FileInfo fileInfo= new FileInfo(Original_File_Name + Ending);
+            FileInfo fileInfo = new FileInfo(Original_File_Name + Ending);
             while (fileInfo.Exists)
             {
-                if (fileInfo.Length >= MAX_SIZE)
+                if (fileInfo.Length >= File_Max_Size)
                 {
-                    counter++;
-                    FILE_NAME = Original_File_Name + counter.ToString() + Ending;
-                    fileInfo= new FileInfo(FILE_NAME);
+                    fileNameCounter++;
+                    File_Name = Original_File_Name + fileNameCounter.ToString() + Ending;
+                    fileInfo = new FileInfo(File_Name);
                 }
                 else
                 {
@@ -52,22 +99,22 @@ namespace Utilities
             }
         }
 
-        public void LogError(string msg)
+        public void LogError(LogItem item)
         {
-            msg = "Error: " + msg;
-           AddToFile(msg,null);
+            item.Type = "Error";
+            AddToFile(item);
         }
 
-        public void LogEvent(string msg)
+        public void LogEvent(LogItem item)
         {
-            msg = "Event: " + msg;
-           AddToFile(msg, null);
+            item.Type = "Event";
+            AddToFile(item);
         }
 
-        public void LogException(string msg, Exception exce)
+        public void LogException(LogItem item)
         {
-            msg = "Exception occurred at: " + msg;
-            AddToFile(msg, exce);
+            item.Type = "Exception";
+            AddToFile(item);
         }
     }
 }

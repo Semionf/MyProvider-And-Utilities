@@ -8,6 +8,7 @@ namespace MyProvider
 {
     public interface ILogger
     {
+
         void Init();
         void LogEvent(string msg);
         void LogError(string msg);

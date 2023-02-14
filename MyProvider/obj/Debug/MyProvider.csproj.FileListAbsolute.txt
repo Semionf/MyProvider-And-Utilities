@@ -1,0 +1,13 @@
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\bin\Debug\MyProvider.exe.config
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\bin\Debug\MyProvider.exe
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\bin\Debug\MyProvider.pdb
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\bin\Debug\System.Data.SqlClient.dll
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\bin\Debug\System.Data.SqlClient.xml
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.csproj.AssemblyReference.cache
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.csproj.SuggestedBindingRedirects.cache
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.Properties.Resources.resources
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.csproj.GenerateResource.cache
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.csproj.CoreCompileInputs.cache
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.csproj.CopyComplete
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.exe
+C:\Users\sfurl\source\repos\MyProvider\MyProvider\obj\Debug\MyProvider.pdb

@@ -6,19 +6,23 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class Log
+    public class Logger
     {
-        public static ILogger myLog;
-      
-        public Log(string provider)
+        static MyILogger myLog;
+        public static Queue<LogItem> myQueue = new Queue<LogItem>();
+
+        public Logger(string provider)
         {
+
             switch (provider)
             {
                 case "File":
                     myLog = new LogFile();
+                    myLog.Init();
                     break;
                 case "DB":
                     myLog = new LogDB();
+                    myLog.Init();
                     break;
                 case "Console":
                     myLog = new LogConsole();
@@ -27,6 +31,18 @@ namespace Utilities
                     myLog = new LogNone();
                     break;
             }
+            myLog.Init();
         }
+
+        public void AddToLog(LogItem item)
+        {
+ 
+            if(item != null)
+            {
+                myQueue.Enqueue(item);
+            }
+           
+        }
+
     }
 }

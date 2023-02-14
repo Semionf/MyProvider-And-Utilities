@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class LogConsole : ILogger
+    public class LogConsole : MyILogger
     {
-        public void PrintMessage(string message, Exception? exce)
+      
+        public void PrintMessage(LogItem item)
         {
-            DateTime DateTime = DateTime.Now;
-            if (exce == null)
+            item.DateTime = DateTime.Now;
+            if (item.exception == null)
             {
-                Console.WriteLine($"{DateTime.Day}/{DateTime.Month} - {DateTime.Hour}:{DateTime.Minute} - {message}");
+                Console.WriteLine($"{item.DateTime.Day}/{item.DateTime.Month} - {item.DateTime.Hour}:{item.DateTime.Minute} - {item.Message}");
             }
             else
             {
-                Console.WriteLine($"{DateTime.Day}/{DateTime.Month} - {DateTime.Hour}:{DateTime.Minute} - {message}, {exce.Message}");
+                Console.WriteLine($"{item.DateTime.Day}/{item.DateTime.Month} - {item.DateTime.Hour} : {item.DateTime.Minute}  -  {item.exception.Message}");
             }
         }
         public void Init()
@@ -30,22 +31,19 @@ namespace Utilities
            
         }
 
-        public void LogError(string msg)
+        public void LogError(LogItem item)
         {
-            msg = "Error: " + msg;
-            PrintMessage(msg,null);
+            PrintMessage(item);
         }
 
-        public void LogEvent(string msg)
+        public void LogEvent(LogItem item)
         {
-            msg = "Event: " + msg;
-            PrintMessage(msg, null);
+            PrintMessage(item);
         }
 
-        public void LogException(string msg, Exception exce)
+        public void LogException(LogItem item)
         {
-            msg = "Exception occurred at: " + msg;
-            PrintMessage(msg, exce);
+            PrintMessage(item);
         }
     }
 }
