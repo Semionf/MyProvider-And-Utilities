@@ -1,0 +1,6 @@
+C:\Users\sfurl\source\repos\MyProvider\MyUtilities\obj\Debug\MyUtilities.csproj.AssemblyReference.cache
+C:\Users\sfurl\source\repos\MyProvider\MyUtilities\obj\Debug\MyUtilities.csproj.CoreCompileInputs.cache
+C:\Users\sfurl\source\repos\MyProvider\MyUtilities\bin\Debug\MyUtilities.dll
+C:\Users\sfurl\source\repos\MyProvider\MyUtilities\bin\Debug\MyUtilities.pdb
+C:\Users\sfurl\source\repos\MyProvider\MyUtilities\obj\Debug\MyUtilities.dll
+C:\Users\sfurl\source\repos\MyProvider\MyUtilities\obj\Debug\MyUtilities.pdb

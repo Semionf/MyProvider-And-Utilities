@@ -9,47 +9,41 @@ namespace Utilities
 {
     public class LogDB : MyILogger
     {
-        static string? ConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
+        static string ConnectionString = Environment.GetEnvironmentVariable("ConnectionString");
         public void Init()
         {
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            Task.Run(() =>
+             {
+                 while (true)
+                 {
+                     if (Logger.myQueue.Count > 0)
+                     {
+                         LogItem item = Logger.myQueue.Dequeue();
+                         if (item.Type == "Error")
+                         {
+                             LogError(item);
+                         }
+                         else if (item.Type == "Event")
+                         {
+                             LogEvent(item);
+                         }
+                         else if (item.Type == "Exception")
+                         {
+                             LogException(item);
+                         }
+                         System.Threading.Thread.Sleep(60000 * 10); // when queue is empty, waits 10 minutes
+                     }
+                 }
+             });
+
+            Task.Run(() =>
             {
-
-                SqlCommand command;
-                Task.Run(() =>
+                while (true)
                 {
-                    while (true)
-                    {
-                        if (Logger.myQueue.Count > 0)
-                        {
-                            LogItem item = Logger.myQueue.Dequeue();
-                            if (item.Type == "Error")
-                            {
-                                LogError(item);
-                            }
-                            else if (item.Type == "Event")
-                            {
-                                LogEvent(item);
-                            }
-                            else if (item.Type == "Exception")
-                            {
-                                LogException(item);
-                            }
-                            System.Threading.Thread.Sleep(60000 * 10); // when queue is empty, waits 10 minutes
-                        }
-                    }
-                });
-
-                Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        LogCheckHouseKeeping();
-                        System.Threading.Thread.Sleep(60000 * 10); // when queue is empty, waits 10 minutes
-                    }
-                });
-               
-            }
+                    LogCheckHouseKeeping();
+                    System.Threading.Thread.Sleep(60000 * 10); // when queue is empty, waits 10 minutes
+                }
+            });
         }
         public void AddToDB(LogItem item)
         {
@@ -59,18 +53,18 @@ namespace Utilities
                 string queryString;
                 if (item.exception != null)
                 {
-                     queryString = $"insert into Log (Stack_Trace, Message, Type, Date) values (@stackTrace,'@message','@type', @dateTime)";
+                    queryString = $"insert into Log (Stack_Trace, Message, Type, Date) values (@stackTrace,'@message','@type', @dateTime)";
                 }
                 else
                 {
-                     queryString = $"insert into Log (Type ,Message, Type, Date) values ( '@type','@message',@dateTime)";
+                    queryString = $"insert into Log (Type ,Message, Type, Date) values ( '@type','@message',@dateTime)";
                 }
 
                 // Adapter
                 using (SqlCommand command = new SqlCommand(queryString, connection))
                 {
                     connection.Open();
-                    if(item.exception!= null)
+                    if (item.exception != null)
                     {
                         command.Parameters.AddWithValue("@message", item.exception.Message);
                         command.Parameters.AddWithValue("@stackTrace", item.exception.StackTrace);
@@ -91,7 +85,7 @@ namespace Utilities
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
-                
+
                 string queryString = "Delete from log where Date < DATEADD(month, -3, GETDATE())";
 
                 // Adapter

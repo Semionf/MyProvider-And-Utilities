@@ -11,7 +11,7 @@ namespace Utilities
         public LogItem() { DateTime = DateTime.Now; }
         public string Message { get; set; }
         public string Type { get; set; }
-        public Exception? exception { get; set; } = null;
+        public Exception exception { get; set; } = null;
         public DateTime DateTime { get; set; }
     }
 }
