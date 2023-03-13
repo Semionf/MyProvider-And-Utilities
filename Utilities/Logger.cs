@@ -16,17 +16,17 @@ namespace Utilities
         static MyILogger myLog;
         public static Queue<LogItem> myQueue = new Queue<LogItem>();
 
-        private static Logger _logger = new Logger();
+        private static Logger _LoggerInstance = new Logger();
 
-        public static Logger logger
+        public static Logger LoggerInstance
         {
-            get { return _logger; }
-            set { _logger = value; }
+            get { return _LoggerInstance; }
         }
+
 
         public Logger()
         {
-            
+
             switch (GetLogProvider())
             {
                 case "File":
@@ -46,22 +46,22 @@ namespace Utilities
                     myLog.Init();
                     break;
             }
-          
         }
+
 
         public static void AddToLog(LogItem item)
         {
-            if(item != null)
+            if (item != null)
             {
                 myQueue.Enqueue(item);
             }
+
         }
 
 
         private string GetLogProvider()
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
-            return config["LogProvider"];
+            return Configuration.RunCommandResultSingleValue("Select Value from Configuration where Name = 'LogProvider'").ToString();
         }
     }
 }

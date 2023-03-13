@@ -9,12 +9,12 @@ namespace Utilities
 {
     public class LogFile : MyILogger
     {
-        private long File_Max_Size = 1024*1024; // 1 mega bytes
-        private string File_Name = "Log.txt";
-        private string Original_File_Name = "Log";
-        private string Ending = ".txt";
+        private readonly long File_Max_Size = 1024 * 1024; // 1 mega bytes
+        private string File_Name = Path.GetFileNameWithoutExtension(Configuration.RunCommandResultSingleValue("Select Value from Configuration where Name = 'LogFileName'").ToString());
+        private readonly string Original_File_Name = Path.GetFileNameWithoutExtension(Configuration.RunCommandResultSingleValue("Select Value from Configuration where Name = 'LogFileName'").ToString());
+        private readonly string Ending = Path.GetExtension(Configuration.RunCommandResultSingleValue("Select Value from Configuration where Name = 'LogFileName'").ToString());
         private int fileNameCounter = 0;
-        private object obj = new object();
+        private readonly object obj = new object();
 
         public void Init()
         {
@@ -45,39 +45,45 @@ namespace Utilities
             string hour, minute, seconds;
             lock (obj)
             {
-                using (StreamWriter sw = new StreamWriter(File_Name, true))
+                if (item != null)
                 {
-                    if (item.DateTime.Hour < 10)
+
+
+                    using (StreamWriter sw = new StreamWriter(File_Name, true))
                     {
-                        hour = "0" + item.DateTime.Hour;
-                    }
-                    else
-                    {
-                        hour = item.DateTime.Hour.ToString();
-                    }
-                    if (item.DateTime.Minute < 10)
-                    {
-                        minute = "0" + item.DateTime.Minute;
-                    }
-                    else
-                    {
-                        minute = item.DateTime.Minute.ToString();
-                    }
-                    if (item.DateTime.Second < 10)
-                    {
-                        seconds = "0" + item.DateTime.Second;
-                    }
-                    else
-                    {
-                        seconds = item.DateTime.Second.ToString();
-                    }
-                    if (item.exception == null)
-                    {
-                        sw.WriteLine($"{item.DateTime.Day}/{item.DateTime.Month}/{item.DateTime.Year} - {hour}:{minute}:{seconds} - {item.Message}");
-                    }
-                    else
-                    {
-                        sw.WriteLine($"{item.DateTime.Day} / {item.DateTime.Month} / {item.DateTime.Year}  -  {hour} : {minute}:{seconds}  -  {item.exception.Message} : {item.exception.StackTrace}");
+
+                        if (item.DateTime.Hour < 10)
+                        {
+                            hour = "0" + item.DateTime.Hour;
+                        }
+                        else
+                        {
+                            hour = item.DateTime.Hour.ToString();
+                        }
+                        if (item.DateTime.Minute < 10)
+                        {
+                            minute = "0" + item.DateTime.Minute;
+                        }
+                        else
+                        {
+                            minute = item.DateTime.Minute.ToString();
+                        }
+                        if (item.DateTime.Second < 10)
+                        {
+                            seconds = "0" + item.DateTime.Second;
+                        }
+                        else
+                        {
+                            seconds = item.DateTime.Second.ToString();
+                        }
+                        if (item.exception == null)
+                        {
+                            sw.WriteLine($"{item.DateTime.Day}/{item.DateTime.Month}/{item.DateTime.Year} - {hour}:{minute}:{seconds} - {item.Message}");
+                        }
+                        else
+                        {
+                            sw.WriteLine($"{item.DateTime.Day} / {item.DateTime.Month} / {item.DateTime.Year}  -  {hour} : {minute}:{seconds}  -  {item.exception.Message} : {item.exception.StackTrace}");
+                        }
                     }
                 }
             }
